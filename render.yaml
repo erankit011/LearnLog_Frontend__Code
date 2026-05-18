@@ -1,0 +1,33 @@
+services:
+  - type: static_site
+    name: learnlog-frontend
+    env: node
+    plan: free
+    runtime: node-18
+    buildCommand: npm install && npm run build
+    publishPath: ./dist
+    routes:
+      - path: /*
+        destination: /index.html
+        type: rewrite
+    envVars:
+      - key: VITE_API_URL
+        value: https://learnlog-backend.onrender.com/api
+      - key: NODE_ENV
+        value: production
+    headers:
+      - path: /index.html
+        name: Cache-Control
+        value: public, max-age=0, must-revalidate
+      - path: /assets/*
+        name: Cache-Control
+        value: public, max-age=31536000, immutable
+      - path: /*
+        name: X-Content-Type-Options
+        value: nosniff
+      - path: /*
+        name: X-Frame-Options
+        value: DENY
+      - path: /*
+        name: X-XSS-Protection
+        value: 1; mode=block
