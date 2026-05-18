@@ -117,6 +117,7 @@ api.interceptors.response.use(
           toast.error('Session expired. Please login again.');
           window.location.href = '/login';
         }
+        
         return Promise.reject(refreshError);
       }
     }
@@ -129,20 +130,19 @@ api.interceptors.response.use(
                       window.location.pathname === '/forgot-password' ||
                       window.location.pathname.startsWith('/reset-password/');
 
-    const shouldShowToast = 
-      (error.response?.status !== 401 || !isAuthPage) && 
-      (
-        !originalRequest.url?.includes('/auth/login') &&
-        !originalRequest.url?.includes('/auth/register') &&
-        !originalRequest.url?.includes('/auth/current-user') &&
-        !originalRequest.url?.includes('/auth/verify-otp') &&
-        !originalRequest.url?.includes('/auth/resend-otp') &&
-        !originalRequest.url?.includes('/auth/refresh-token') &&
-        !originalRequest.url?.includes('/auth/forgot-password') &&
-        !originalRequest.url?.includes('/auth/reset-password')
-      );
+    const isAuthEndpoint = 
+      originalRequest.url?.includes('/auth/login') ||
+      originalRequest.url?.includes('/auth/register') ||
+      originalRequest.url?.includes('/auth/current-user') ||
+      originalRequest.url?.includes('/auth/verify-otp') ||
+      originalRequest.url?.includes('/auth/resend-otp') ||
+      originalRequest.url?.includes('/auth/refresh-token') ||
+      originalRequest.url?.includes('/auth/forgot-password') ||
+      originalRequest.url?.includes('/auth/reset-password');
 
-    if (shouldShowToast && error.response?.status !== 429) {
+    const shouldShowToast = !isAuthPage && !isAuthEndpoint && error.response?.status !== 429;
+
+    if (shouldShowToast) {
       toast.error(errorMessage);
     }
 
