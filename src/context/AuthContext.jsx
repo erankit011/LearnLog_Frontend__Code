@@ -27,7 +27,9 @@ export const AuthProvider = ({ children }) => {
 
   const checkAuth = async () => {
     try {      
-      const response = await api.get('/auth/current-user');
+      const response = await api.get('/auth/current-user', {
+        _skipAuthToast: true
+      });
       
       if (response.data.success) {
         setUser(response.data.data.user);
@@ -39,8 +41,12 @@ export const AuthProvider = ({ children }) => {
     } catch (error) {
       if (error.response?.status === 401) {
         try {
-          await api.post('/auth/refresh-token');
-          const retryResponse = await api.get('/auth/current-user');
+          await api.post('/auth/refresh-token', {}, {
+            _skipAuthToast: true
+          });
+          const retryResponse = await api.get('/auth/current-user', {
+            _skipAuthToast: true
+          });
           if (retryResponse.data.success) {
             setUser(retryResponse.data.data.user);
             setIsAuthenticated(true);

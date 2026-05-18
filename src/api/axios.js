@@ -113,7 +113,9 @@ api.interceptors.response.use(
                           window.location.pathname === '/forgot-password' ||
                           window.location.pathname.startsWith('/reset-password/');
         
-        if (!isAuthPage) {
+        const skipAuthToast = originalRequest._skipAuthToast;
+        
+        if (!isAuthPage && !skipAuthToast) {
           toast.error('Session expired. Please login again.');
           window.location.href = '/login';
         }
